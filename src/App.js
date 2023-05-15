@@ -7,6 +7,7 @@ import './App.css';
 function App() {
   return (
     <Container className="p-3">
+      <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
         <h1 className="header">Annotation Tool Component</h1>
         <Layout>
        

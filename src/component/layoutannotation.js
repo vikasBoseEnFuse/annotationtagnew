@@ -2,11 +2,17 @@ import React, { useEffect, useState } from 'react';
 
 import { Button } from 'react-bootstrap';
 import Toast from 'react-bootstrap/Toast';
+import Annotation from 'react-image-annotation'
+import {
+    RectangleSelector,
+    OvalSelector
+  } from 'react-image-annotation/lib/selectors'
 import './layoutannotation.css';
 
 
 const Layout = ({ children }) => {
     const [show, toggleShow] = useState(true);
+    let argShow = true;
 
     let magnify = (imgID, zoom) => {
         var img, glass, w, h, bw;
@@ -23,13 +29,8 @@ const Layout = ({ children }) => {
         bw = 3;
         w = glass.offsetWidth / 2;
         h = glass.offsetHeight / 2;
-        /*execute a function when someone moves the magnifier glass over the image:*/
-        glass.addEventListener("mousemove", moveMagnifier);
-        img.addEventListener("mousemove", moveMagnifier);
-        /*and also for touch screens:*/
-        glass.addEventListener("touchmove", moveMagnifier);
-        img.addEventListener("touchmove", moveMagnifier);
-        function moveMagnifier(e) {
+        
+        let moveMagnifier = (e) => {
           var pos, x, y;
           /*prevent any other actions that may occur when moving over the image*/
           e.preventDefault();
@@ -43,12 +44,12 @@ const Layout = ({ children }) => {
           if (y > img.height - (h / zoom)) {y = img.height - (h / zoom);}
           if (y < h / zoom) {y = h / zoom;}
           /*set the position of the magnifier glass:*/
-          glass.style.left = ((x - w)*400)+ "px";
-          glass.style.top = ((y - h)*900) + "px";
+          glass.style.left = ((x - w))+ "px";
+          glass.style.top = ((y - h)) + "px";
           /*display what the magnifier glass "sees":*/
           glass.style.backgroundPosition = "-" + ((x * zoom) - w + bw) + "px -" + ((y * zoom) - h + bw) + "px";
         }
-        function getCursorPos(e) {
+        let getCursorPos = (e) => {
           var a, x = 0, y = 0;
           e = e || window.event;
           /*get the x and y positions of the image:*/
@@ -61,24 +62,43 @@ const Layout = ({ children }) => {
           y = y - window.pageYOffset;
           return {x : x, y : y};
         }
+
+        /*execute a function when someone moves the magnifier glass over the image:*/
+        glass.addEventListener("mousemove", moveMagnifier);
+        img.addEventListener("mousemove", moveMagnifier);
+        /*and also for touch screens:*/
+        glass.addEventListener("touchmove", moveMagnifier);
+        img.addEventListener("touchmove", moveMagnifier);
       };
     
     let onChangeImage = () => {
         console.log("hello")
     }
+
+    let openMagnifyGlass = (arg) => {
+        console.log("Vikas=", arg);
+       if(arg===true) {
+            magnify("mainimage", 2);
+       }
+    }
+
+    let zoomIn = () => {
+        console.log("Vikas Bose");
+        argShow = false;
+    }
     
     useEffect(() => {
-        magnify("mainimage", 3);
+        console.log('Annotations')
     }, []);
     
     return (
         <>
         {!show && <Button onClick={() => toggleShow(true)}>Show</Button>}
-        <Toast show={show} onClose={() => toggleShow(false)} style={{width: '2000px'}}>
-            <Button style={{marginTop:'5px', marginLeft:'1000px'}} onClick={() => onChangeImage()}>Previous</Button><Button style={{marginTop:'5px', marginLeft:'80px'}} onClick={() => onChangeImage()}>Next</Button>
+        <Toast className="toast" show={show} onClose={() => toggleShow(false)} style={{width: '100%'}}>
+            <Button className="button" style={{marginTop:'5px', marginLeft:'calc(50% - 100px)'}} onClick={() => onChangeImage()}>Previous</Button><Button className="button" style={{marginTop:'5px', marginLeft:'20px'}} onClick={() => onChangeImage()}>Next</Button>
             {/* <Toast.Header></Toast.Header> */}
-            <Toast.Body>
-                <table width={'1300px'}>
+            <Toast.Body className="toast-body">
+                <table style={{width: '100%', maxWidth: '1100px'}} className="responsive">
                     <tbody>
                     <tr>
                         <td colSpan={2}></td>
@@ -86,7 +106,8 @@ const Layout = ({ children }) => {
                     </tr>
                     <tr>
                         <td width={'30px'} >
-                        <div id='one'><img src={process.env.PUBLIC_URL+"/icons/zoom_in_icon.png"} alt=''/></div><br/>
+                        <div id='seven' onClick={()=> openMagnifyGlass(argShow)}><img src={process.env.PUBLIC_URL+"/icons/magnifier_glass_icon.png"} alt=''/></div><br/>
+                        <div id='one' onClick={()=> zoomIn()}><img src={process.env.PUBLIC_URL+"/icons/zoom_in_icon.png"} alt=''/></div><br/>
                         <div id='two'><img src={process.env.PUBLIC_URL+"/icons/zoom_out_icon.png"} alt=''/></div><br/>
                         <div id='three'><img src={process.env.PUBLIC_URL+"/icons/copy_icon.png"} alt=''/></div><br/>
                         <div id='four'><img src={process.env.PUBLIC_URL+"/icons/edit_paste_icon.png"} alt=''/></div><br/>
@@ -98,8 +119,29 @@ const Layout = ({ children }) => {
                         <div id='six'><img src={process.env.PUBLIC_URL+"/icons/polygon_thin_icon.png"} alt=''/></div><br/>
                         <div style={{marginBottom: '200px'}} id='seven'><img src={process.env.PUBLIC_URL+"/icons/delete_garbage_icon.png"} alt=''/></div>
                         </td>
-                        <td width={'700px'} height={'720px'} style={{border: '1px solid #000'}}><img src={process.env.PUBLIC_URL+"/images/one.jpg"} width={'1100px'} height={'720px'} id='mainimage' alt=''/></td>
-                        <td width={'200px'}></td>
+                        <td style={{border: '1px solid #000'}}>
+                            <div className='img-magnifier-container'>
+                                <img src={process.env.PUBLIC_URL+"/images/six.jpg"} width={'1000px'} height={'720px'} id='mainimage' alt='' />
+                            </div>
+                        </td>
+                        <td width={'200px'}>
+                            <div class="panel-group" style={{marginBottom: '300px'}}>
+                                <div class="panel panel-default">
+                                    <div class="panel-body">Annotations</div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-body">Panel Content</div>
+                                </div>
+                            </div>
+                            <div class="panel-group" style={{marginBottom: '300px'}}>
+                                <div class="panel panel-default">
+                                    <div class="panel-body">Tags</div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-body">Panel Content</div>
+                                </div>
+                            </div>
+                        </td>
                     </tr>
                     <tr>
                         <td colSpan={3}></td>
