@@ -150,17 +150,7 @@ const Layout = ({ children }) => {
           </Button>
 
           <Toast.Body className="toast-body">
-            {/* Rest of the code */}
-            {/* <div className='img-magnifier-container'>
-            <img
-              src={process.env.PUBLIC_URL + "/images/six.jpg"}
-              width={1000 * scale} // Apply the scale to the width
-              height={720 * scale} // Apply the scale to the height
-              id='mainimage'
-              alt=''
-            /> 
-          </div> */}
-            {/* Rest of the code */}
+            
           </Toast.Body>
         </Toast>
       </>
