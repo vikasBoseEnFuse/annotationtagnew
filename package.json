@@ -1,29 +1,27 @@
 {
-  "name": "annotationtag-v1.0",
+  "name": "kanva-draggable-polygon",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "cropperjs": "^1.5.13",
+    "@tensorflow-models/coco-ssd": "^2.2.1",
+    "@tensorflow/tfjs-backend-cpu": "^2.8.6",
+    "@tensorflow/tfjs-backend-webgl": "^2.8.6",
+    "@tensorflow/tfjs-converter": "^2.8.6",
+    "@tensorflow/tfjs-core": "^2.8.6",
+    "@testing-library/jest-dom": "^5.15.0",
+    "@testing-library/react": "^11.2.7",
+    "@testing-library/user-event": "^12.8.3",
     "konva": "^8.2.3",
-    "path-browserify": "^1.0.1",
-    "react": "17.0.2",
-    "react-cropper": "^2.3.2",
-    "react-dom": "17.0.2",
-    "react-image-annotation": "^0.9.10",
-    "react-image-crop": "9.0.4",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-image-crop": "^10.1.4",
     "react-konva": "^17.0.2-5",
-    "react-magnifier": "^3.0.4",
-    "react-polygon-drawer": "^0.1.4",
-    "react-scripts": "4.0.3",
-    "use-undo": "^1.1.1",
-    "utils": "^0.3.1",
-    "web-vitals": "^2.1.4"
+    "react-scripts": "^5.0.1",
+    "styled-components": "^5.2.1",
+    "web-vitals": "^1.1.2"
   },
   "scripts": {
-    "start": "react-scripts --openssl-legacy-provider start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -45,5 +43,11 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "peerDependencies": {
+    "@tensorflow/tfjs-backend-cpu": "^2.8.6",
+    "@tensorflow/tfjs-backend-webgl": "^2.8.6",
+    "@tensorflow/tfjs-converter": "^2.8.6",
+    "@tensorflow/tfjs-core": "^2.8.6"
   }
 }

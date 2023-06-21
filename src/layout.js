@@ -1,276 +1,189 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
-import Annotation from 'react-image-annotation';
-import { RectangleSelector } from 'react-image-annotation/lib/selectors';
-import ReactCrop from 'react-image-crop';
-import Magnifier from "react-magnifier";
-//import ReactPolygonDrawer from 'react-polygon-drawer';
-import Canvas from "./containers/Canvas";
-import useUndo from "use-undo";
-
-import "cropperjs/dist/cropper.css";
+import React, { useState, useRef, useEffect } from 'react'
+import './App.css'
+import Canvas from 'containers/Canvas';
+import Rectangle from 'component/Rectangle';
+import ReactCrop, {
+  centerCrop,
+  makeAspectCrop,
+  Crop,
+  PixelCrop
+} from 'react-image-crop';
+import canvasPreview from 'component/cropping/canvasPreview';
 import 'react-image-crop/dist/ReactCrop.css';
-//import "../src/components/cropping/cropping.css";
-import './components/layout/layout.css';
+import Detector from 'component/objectDetector/Detector';
 
-
-const defaultSrc = `${process.env.PUBLIC_URL}/images/six.jpg`;
 const Layout = () => {
-const [cropSec, setCropSec] = useState(false)
-const [annotationSec, setAnnotationSec] = useState(false)
-const [magnifierSec, setMegnifierSec] = useState(false)
-const [polygonSec, setPolygonSec] = useState(false);
-const [isPolygon,setIsPolygone] = useState(false);
-const [annotations, setAnnotations] = useState([]);
-const [annotation, setAnnotation] = useState({});
-const [upImg, setUpImg] = useState();
-const imgRef = useRef(null);
-const previewCanvasRef = useRef(null);
-let [crop, setCrop] = useState({ unit: 'px', width: 0, aspect: 1, height: 0, x: 0, y: 0 });
-const [completedCrop, setCompletedCrop] = useState(null);
-const [
-    countState,
-    {
-      set: setCount,
-      reset: resetCount,
-      undo: undoCount,
-      redo: redoCount,
-      canUndo,
-      canRedo
-    }
-  ] = useUndo({width:crop.width, height:crop.height, unit:crop.unit, x:crop.x, y:crop.y, aspect:1});
+  const [isRect, setIsRect] = useState(false);
+  const [addRect, setAddRect] = useState(1);
+  const [isPolygon, setIsPolygone] = useState(false);
+  const [isCrop, setIsCrop] = useState(false);
+  const [isDetector,setIsDetector] = useState(false);
+  const [documentSec, setDocumentSec] = useState(false);
+  const [imageSec, setImageSec] = useState(false);
+  const [videoSec, setVideoSec] = useState(false);
+  const [audioSec, setAudioSec] = useState(false);
+  const initDrawer = () => {
+    setDocumentSec(false);
+    setImageSec(false);
+    setVideoSec(false);
+    setAudioSec(false);
+  }
+  const initFun = () => {
+    setIsCrop(false);
+    setIsPolygone(false);
+    setIsRect(false);
+    setIsDetector(false);
+  }
 
-const [zoom, setZoom] = useState(1);
-const [scale, setScale] = useState(1);
+  const cropStyle = {
+    width: '80vw', 
+    height: '500px',
+   }
+  
+  // const [annotations, setAnnotations] = useState([])
+  const [annotation, setAnnotation] = useState({})
+  const [crop, setCrop] = useState();
+  const [completedCrop, setCompletedCrop] = useState({ width: 0, height: 0 })
+  const previewCanvasRef = useRef(null)
+  const imgRef = useRef(null)
+  const hiddenAnchorRef = useRef(null)
+  const blobUrlRef = useRef('')
+  const cropperRef = useRef(null);
+  const [scale, setScale] = useState(1)
+  const [rotate, setRotate] = useState(0)
+  const onCrop = () => {
+    const cropper = cropperRef.current?.cropper;
+    console.log(cropper.getCroppedCanvas().toDataURL());
+  };
 
-const { present: presentCount } = countState;
- const defaultScale = 1.0;
-//console.log(crop, presentCount);
-
-// on selecting file we set load the image on to cropper
-const onSelectFile = (e) => {
-    if (e.target.files && e.target.files.length > 0) {
-        const reader = new FileReader();
-        reader.addEventListener('load', () => setUpImg(reader.result));
-        reader.readAsDataURL(e.target.files[0]);
-    }
-};
-
-const onLoad = useCallback((img) => {
-    imgRef.current = img;
-}, []);
-
-const onChange = (annotation)=> {
+  const onChange = (annotation) => {
     setAnnotation(annotation)
-}
-
-
-const onSubmit = (annotation)=> {
-    const { geometry, data } = annotation
-    setAnnotations(annotations.concat({
-        geometry,
-        data: {
-          ...data,
-          id: Math.random()
-        }
-    }))
-}
-
-const zoomIn = () => {
-    setScale((prevScale) => prevScale + 0.1);
-};
-
-const zoomOut = () => {
-    const newScale = scale - 0.1;
-
-    if (newScale <= defaultScale) {
-      setScale(defaultScale);
-    } else {
-      setScale(newScale);
-    }
-};
-
-/**
- * Cropping start
- */
-function generateDownload(canvas, crop) {
-    if (!crop || !canvas) {
-      return;
-    }
-  
-    canvas.toBlob(
-      (blob) => {
-        const previewUrl = window.URL.createObjectURL(blob);
-  
-        const anchor = document.createElement('a');
-        anchor.download = 'cropPreview.png';
-        anchor.href = URL.createObjectURL(blob);
-        anchor.click();
-  
-        window.URL.revokeObjectURL(previewUrl);
-      },
-      'image/png',
-      1
-    );
   }
-  
-function setCanvasImage(image, canvas, crop) {
-    if (!crop || !canvas || !image) {
-      return;
+
+  // const onSubmit = (annotation)=> {
+  //     const { geometry, data } = annotation
+  //     setAnnotations(annotations.concat({
+  //         geometry,
+  //         data: {
+  //           ...data,
+  //           id: Math.random()
+  //         }
+  //     }))
+  // }
+
+  const onDownloadCropClick = () => {
+    if (!previewCanvasRef.current) {
+      throw new Error('Crop canvas does not exist')
     }
-  
-    const scaleX = image.naturalWidth / image.width;
-    const scaleY = image.naturalHeight / image.height;
-    const ctx = canvas.getContext('2d');
-    // refer https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio
-    const pixelRatio = window.devicePixelRatio;
-  
-    canvas.width = crop.width * pixelRatio * scaleX;
-    canvas.height = crop.height * pixelRatio * scaleY;
-  
-    // refer https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setTransform
-    ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-    ctx.imageSmoothingQuality = 'high';
-  
-    // refer https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
-    ctx.drawImage(
-      image,
-      crop.x * scaleX,
-      crop.y * scaleY,
-      crop.width * scaleX,
-      crop.height * scaleY,
-      0,
-      0,
-      crop.width * scaleX,
-      crop.height * scaleY
-    );
-    setCount({width:crop.width - 10, height:crop.height -10, unit:crop.unit, x:crop.x - 10, y:crop.y - 10, aspect:1})
+
+    previewCanvasRef.current.toBlob((blob) => {
+      if (!blob) {
+        throw new Error('Failed to create blob')
+      }
+      if (blobUrlRef.current) {
+        URL.revokeObjectURL(blobUrlRef.current)
+      }
+      console.log("Vikas=", blobUrlRef);
+      blobUrlRef.current = URL.createObjectURL(blob)
+      hiddenAnchorRef.current.href = blobUrlRef.current
+      hiddenAnchorRef.current.click()
+    })
   }
-/**
- * End
- */  
 
-
-useEffect(() => {
-    setCanvasImage(imgRef.current, previewCanvasRef.current, completedCrop);
-  }, [completedCrop]);
-
-const onChangeType = (arg)=> {
-    console.log(arg);
-    if(arg === 'crop') {
-        setMegnifierSec(false);
-        setAnnotationSec(false);
-        setPolygonSec(false);
-        setCropSec(true);
-    } else if(arg === 'rect') {
-        setCropSec(false);
-        setMegnifierSec(false);
-        setPolygonSec(false);
-        setAnnotationSec(true);
-    } else if(arg === 'magnifier') {
-        setCropSec(false);
-        setAnnotationSec(false);
-        setPolygonSec(false);
-        setMegnifierSec(true);
-    } else if(arg === 'cls') {
-        setCropSec(false);
-        setMegnifierSec(false);
-        setAnnotationSec(false);
-        setPolygonSec(false);
-    } else if(arg === 'polygon') {
-        setPolygonSec(true);
+  useEffect(() => {
+    if (
+      completedCrop?.width &&
+      completedCrop?.height &&
+      imgRef.current &&
+      previewCanvasRef.current
+    ) {
+      // We use canvasPreview as it's much faster than imgPreview.
+      canvasPreview(
+        imgRef.current,
+        previewCanvasRef.current,
+        completedCrop,
+        scale,
+        rotate,
+      )
     }
-}
-    return (
-        <>
-            <div className="polaroid">                
-                <div className="menu">
-                    <ul>
-                        <li>
-                            <img src={process.env.PUBLIC_URL + "/icons/magnifier_glass_icon.png"} alt="magnifierIcon" width={'20px'} onClick={() => onChangeType('magnifier')} />
-                        </li>
-                        <li>
-                            <img src={process.env.PUBLIC_URL + "/icons/crop_icon.png"} alt='cropIcon' onClick={() =>{ onChangeType('crop');}} />
-                        </li>
-                        <li><img src={process.env.PUBLIC_URL + "/icons/design_graphic_rectangle_transform_icon.png"} alt='rectangleIcon' onClick={() => onChangeType('rect')}/></li>
-                        <li><img src={process.env.PUBLIC_URL + "/icons/polygon_thin_icon.png"} alt='polygonIcon' onClick={() =>{ onChangeType('polygon'); setIsPolygone(!isPolygon)}}/></li>
-                        <li><img src={process.env.PUBLIC_URL + "/icons/arrow_back_undo_left_navigation_icon.png"} alt='undoIcon' onClick={() =>{ undoCount()}} disabled={!canUndo}/></li>
-                        <li><img src={process.env.PUBLIC_URL + "/icons/arrow_forward_redo_navigation_right_icon.png"} alt='redoIcon' onClick={() =>{ setIsPolygone(!isPolygon)}}/></li>
-                        <li><img src={process.env.PUBLIC_URL + "/icons/delete_garbage_icon.png"} alt='deleteIcon' onClick={() => onChangeType('delete')}/></li>
-                        <li onClick={() => zoomIn()}><img src={process.env.PUBLIC_URL + '/icons/zoom_in_icon.png'} alt="zoomin"/></li>
-                        <li onClick={() => zoomOut()}><img src={process.env.PUBLIC_URL + '/icons/zoom_out_icon.png'} alt="zoomout"/></li>
-                        <li><button onClick={() => onChangeType('cls')}>close</button></li>
-                    </ul>
-                </div>
-                <div className="main">
-                {cropSec && 
-                    <>
-                        <div>
-                            <input type='file' accept='image/*' onChange={onSelectFile} />
-                        </div>
-                        <ReactCrop
-                            src={upImg}
-                            onImageLoaded={onLoad}
-                            crop={crop}
-                            onChange={(c) => setCrop(c)}
-                            onComplete={(c) => setCompletedCrop(c)}
-                        />
-                        <div>
-                            {/* Canvas to display cropped image */}
-                            <canvas
-                            ref={previewCanvasRef}
-                            // Rounding is important so the canvas width and height matches/is a multiple for sharpness.
-                            style={{
-                                /* width: Math.round(completedCrop?.width ?? 0),
-                                height: Math.round(completedCrop?.height ?? 0), */
-                                width: 60,
-                                height: 60,
-                            }}
-                            />
-                        </div>
-                        <button type='button' disabled={!completedCrop?.width || !completedCrop?.height} onClick={() => generateDownload(previewCanvasRef.current, completedCrop)}>
-                            Download
-                        </button>
-                    </> 
-                }
-                {annotationSec && 
-                    <>
-                        <Annotation 
-                            src={defaultSrc}
-                            annotations={annotations}
-                            value={annotation}
-                            type={RectangleSelector.TYPE}
-                            onChange={onChange}
-                            onSubmit={onSubmit}
-                            style={{width: '100%', height: '740px'}}
-                        />
-                    </>
-                }
-                {magnifierSec && 
-                    <>
-                        <Magnifier 
-                            src={defaultSrc} 
-                            width={'100%'}
-                            height={'740px'}
-                            zoomFactor={1.5}
-                            mgWidth={200}
-                            mgHeight={200} />;
-                    </>
-                }
-                {polygonSec && 
-                    <>
-                        {/* <img src={defaultSrc} style={{width: '100%', height: '740px'}} alt='ploygonimg'></img>
-                        <ReactPolygonDrawer 
-                            width={400} 
-                            height={400} 
-                        /> */}
-                        <Canvas />
-                    </>
-                }
-                </div> 
-                <div className="sidebar"></div>      
-            </div>
-        </>
-    )
+  })
+
+  
+  return (
+    <div id='super_wrapper'>
+      <div id='upper_sec'></div>
+      <div id='main_wrapper'>
+        <div className='side_panal'>
+          <div className='icon_wrapper'>
+            <div className='icon-container'><i className="icon bi bi-zoom-in"></i></div>
+            <div className='icon-container'><i className="icon bi bi-zoom-out"></i></div>
+            <div className={`icon-container ${isCrop ? 'icon-bg' : ''}`}
+              onClick={() => { initFun(); setIsCrop(!isCrop) }}
+            ><i className="icon bi bi-crop"></i></div>
+            <div className={`icon-container ${isRect ? 'icon-bg' : ''}`}
+              onClick={() => { initFun(); setIsRect(!isRect) }}
+            ><i className="icon bi bi-square"></i></div>
+            <div className={`icon-container ${isPolygon ? 'icon-bg' : ''}`}
+              onClick={() => { initFun(); setIsPolygone(!isPolygon) }}
+            ><img id='pol_icon' src='images/polygon.png' alt='polygone' /></div>
+            <div className={`icon-container ${isDetector ? 'icon-bg' : ''}`} 
+             onClick={() => { initFun(); setIsDetector(!isDetector) }}><i className="bi bi-eye-fill"></i></div>
+          </div>
+          <div id='sub_panal'>
+            {isRect ? <label onClick={() => { setAddRect(addRect + 1) }}>Add Rectangle</label> : null}
+            {isPolygon ? <label>Polygon</label> : null}
+            {isCrop ? <label>Crop</label> : null}
+          </div>
+        </div>
+        <section id='img_sec' className=''>
+          {/* image */}
+          <img id='main_img' className={`${isCrop||isDetector?'remove':''}`} src='images/ten.jpg' />
+          {/* polygon */}
+          {isPolygon ? <Canvas /> : null}
+          {/* Rectangle */}
+          {isRect ? <Rectangle isRect={isRect} addRectCount={addRect} /> : null}
+          {/* Crop */}
+          {isCrop &&
+              <ReactCrop
+                crop={crop}
+                onChange={c => setCrop(c)}
+                onComplete={(c) => setCompletedCrop(c)}>
+                <img src={process.env.PUBLIC_URL + "/images/ten.jpg"} style={cropStyle} />
+              </ReactCrop>
+          }
+          {/* Obj-detector */}
+          {isDetector?<Detector/>:null}
+        </section>
+        <div id='right_sub_panal'>
+          <div className='right_icon_wrapper' onClick={() => { initDrawer(); setDocumentSec(true) }}><i className="bi bi-file-earmark-text"></i></div>
+          <div className='right_icon_wrapper' onClick={() => { initDrawer(); setImageSec(true) }}><i className="bi bi-card-image"></i></div>
+          <div className='right_icon_wrapper' onClick={() => { initDrawer(); setVideoSec(true) }}><i className="bi bi-youtube"></i></div>
+          <div className='right_icon_wrapper' onClick={() => { initDrawer(); setAudioSec(true) }}><i className="bi bi-music-note-beamed"></i></div>
+          <div className='right_icon_wrapper'><i className="bi bi-plus-lg"></i></div>
+        </div>
+        {documentSec ? <div className='right_drawer'>
+          <div className='drawer_header'>
+            <label>Document tag</label> <i onClick={() => { setDocumentSec(!documentSec) }} className="bi bi-x-square"></i>
+          </div>
+        </div> : null}
+        {imageSec ? <div className='right_drawer'>
+          <div className='drawer_header'>
+            <label>Image tag</label> <i onClick={() => { setImageSec(!imageSec) }} className="bi bi-x-square"></i>
+          </div>
+        </div> : null}
+        {videoSec ? <div className='right_drawer'>
+          <div className='drawer_header'>
+            <label>Video tag</label> <i onClick={() => { setVideoSec(!videoSec) }} className="bi bi-x-square"></i>
+          </div>
+        </div> : null}
+        {audioSec ? <div className='right_drawer'>
+          <div className='drawer_header'>
+            <label>Audio tag</label> <i onClick={() => { setAudioSec(!audioSec) }} className="bi bi-x-square"></i>
+          </div>
+        </div> : null}
+      </div>
+    </div>
+  )
 }
 
 export default Layout;

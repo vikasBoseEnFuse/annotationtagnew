@@ -1,12 +1,13 @@
-import logo from './logo.svg';
-import './App.css';
-import Layout from './layout';
+import React from "react";
+import "./App.css";
+import Layout from "./Layout";
 
 function App() {
   return (
-    <div className="App">
-      <h1 className="header">Annotation Tool Component</h1>
-      <Layout />
+    <div style={{height:'100vh'
+    ,overflow:'hidden'
+    }}>
+      <Layout/>
     </div>
   );
 }

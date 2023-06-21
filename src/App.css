@@ -1,38 +1,87 @@
-.App {
-  text-align: left;
+#super_wrapper{
+  border: 2px solid gray;
+  border-radius: 15px;
+  overflow: hidden;
 }
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+#upper_sec{
+  width: 100%;
+  padding: 25px 35px;
+  background-color: rgb(240, 245, 248);
 }
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+#main_wrapper{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  background-color: rgb(240, 245, 248);
 }
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.side_panal{
+  display: flex;
+}
+.icon_wrapper{
+  height: 90vh;
+  background-color: rgb(36, 35, 35);
+}
+.icon-container{
+  color: white;
+  padding: 9px 7px;
+  border-radius: 7px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 5px 2px;
+}
+#pol_icon{
+  width:20px;
+}
+#sub_panal{
+  width: 180px;
+  background-color: white;
+  box-shadow: 2px 2px 2px gray;
+}
+#img_sec{
+  width: 100%;
+  position: relative;
+}
+#main_img{
+  width:100%;
+  margin-left: 2px;
+  height: 83vh;
+  border-radius: 5px;
+}
+.border{
+  border: 1px solid black;
+}
+#right_sub_panal{
+  width: 60px;
   display: flex;
   flex-direction: column;
-  align-items: right;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: center;
 }
-
-.App-link {
-  color: #61dafb;
+.right_icon_wrapper{
+  font-size: 18px;
+  margin: 10px;
+  padding: 11px 15px;
+  border-radius: 9999px;
 }
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.right_icon_wrapper:hover{
+  background-color: rgb(193, 194, 195);
+}
+.right_drawer{
+  width: 300px;
+  height: 90vh;
+  font-size: 20px;
+  background-color: white;
+  border-radius: 5px;
+  border: 1px solid black;
+}
+.drawer_header{
+  display: flex;
+  justify-content: space-between;
+  margin: 5px 10px;
+}
+.remove{
+  display: none;
+}
+.header{
+    margin:5px 10px;
 }

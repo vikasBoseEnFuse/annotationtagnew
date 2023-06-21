@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Line, Circle, Group } from "react-konva";
-import { minMax, dragBoundFunc } from "../../utils";
+import { minMax, dragBoundFunc } from "utils";
 /**
  *
  * @param {minMaxX} props
