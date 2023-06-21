@@ -24,9 +24,11 @@ const [annotations, setAnnotations] = useState([]);
 const [annotation, setAnnotation] = useState({});
 const [upImg, setUpImg] = useState();
 const imgRef = useRef(null);
+const defaultScale = 1.0;
 const previewCanvasRef = useRef(null);
 let [crop, setCrop] = useState({ unit: 'px', width: 0, aspect: 1, height: 0, x: 0, y: 0 });
 const [completedCrop, setCompletedCrop] = useState(null);
+const [brightness, setBrightness] = useState(100);
 const [
     countState,
     {
@@ -43,7 +45,7 @@ const [zoom, setZoom] = useState(1);
 const [scale, setScale] = useState(1);
 
 const { present: presentCount } = countState;
- const defaultScale = 1.0;
+ 
 //console.log(crop, presentCount);
 
 // on selecting file we set load the image on to cropper
@@ -88,6 +90,9 @@ const zoomOut = () => {
       setScale(newScale);
     }
 };
+  const handleBrightnessChange = event => {
+    setBrightness(event.target.value);
+  };
 
 /**
  * Cropping start
@@ -198,7 +203,8 @@ const onChangeType = (arg)=> {
                         <li><img src={process.env.PUBLIC_URL + "/icons/delete_garbage_icon.png"} alt='deleteIcon' onClick={() => onChangeType('delete')}/></li>
                         <li onClick={() => zoomIn()}><img src={process.env.PUBLIC_URL + '/icons/zoom_in_icon.png'} alt="zoomin"/></li>
                         <li onClick={() => zoomOut()}><img src={process.env.PUBLIC_URL + '/icons/zoom_out_icon.png'} alt="zoomout"/></li>
-                        <li><button onClick={() => onChangeType('cls')}>close</button></li>
+                        
+                      <li><button onClick={() => onChangeType('cls')}>close</button></li>
                     </ul>
                 </div>
                 <div className="main">
@@ -248,12 +254,28 @@ const onChangeType = (arg)=> {
                 {magnifierSec && 
                     <>
                         <Magnifier 
-                            src={defaultSrc} 
-                            width={'100%'}
-                            height={'740px'}
-                            zoomFactor={1.5}
-                            mgWidth={200}
-                            mgHeight={200} />;
+                        src={process.env.PUBLIC_URL + "/images/six.jpg"}
+                        style={{
+                          mgwidth: "200%",
+                          mgheight: "200%",
+                          objectFit: "cover",
+                          transform: `scale(${scale})`,
+                          transformOrigin: "top left",
+                          filter: `brightness(${brightness}%)`,
+                        }}
+                        id="mainimage"
+                        alt=""
+                      />
+                      <input
+                        type="range"
+                        id="brightnessRange"
+                        min="0"
+                        max="200"
+                        value={brightness}
+                        onChange={handleBrightnessChange}
+                            
+                            />;
+                            
                     </>
                 }
                 {polygonSec && 
