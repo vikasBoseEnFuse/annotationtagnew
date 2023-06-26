@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useState, useEffect } from "react";
-import PolygonAnnotation from "component/PolygonAnnotation";
+import PolygonAnnotation from "components/polygon/PolygonAnnotation";
 import { Stage, Layer, Image } from "react-konva";
-import Button from "component/Button";
+import Button from "components/polygon/Button";
 const videoSource = "./space_landscape.jpg";
 const wrapperStyle = {
   position:'absolute',top:'0px'

@@ -26,6 +26,9 @@ const TargetImg = styled.img`
   height: 100%;
 `;
 
+const shade = [
+  'aqua','blue','black','orange','red','white','gray','pink',
+]
 const HiddenFileInput = styled.input`
   display: none;
 `;
@@ -112,7 +115,7 @@ export function ObjectDetector(props) {
     const predictions = await model.detect(imageElement, 6);
     const normalizedPredictions = normalizePredictions(predictions, imgSize);
     setPredictions(normalizedPredictions);
-    console.log("Predictions: ", predictions);
+    console.log("Predictions: ", JSON.stringify(predictions));
   };
 
   const readImage = (file) => {
@@ -155,6 +158,7 @@ export function ObjectDetector(props) {
               key={idx}
               x={prediction.bbox[0]}
               y={prediction.bbox[1]}
+              style={{border:`4px solid ${shade[idx]}`}}
               width={prediction.bbox[2]}
               height={prediction.bbox[3]}
               classType={prediction.class}

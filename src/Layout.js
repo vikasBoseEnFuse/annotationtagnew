@@ -1,16 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react'
 import './App.css'
 import Canvas from 'containers/Canvas';
-import Rectangle from 'component/Rectangle';
+import Rectangle from 'components/rectangle/Rectangle';
 import ReactCrop, {
   centerCrop,
   makeAspectCrop,
   Crop,
   PixelCrop
 } from 'react-image-crop';
-import canvasPreview from 'component/cropping/canvasPreview';
+import canvasPreview from 'components/cropping/canvasPreview';
 import 'react-image-crop/dist/ReactCrop.css';
-import Detector from 'component/objectDetector/Detector';
+import Detector from 'components/objectDetector/Detector';
 
 const Layout = () => {
   const [isRect, setIsRect] = useState(false);
