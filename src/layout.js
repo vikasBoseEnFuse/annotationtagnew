@@ -29,6 +29,7 @@ const previewCanvasRef = useRef(null);
 let [crop, setCrop] = useState({ unit: 'px', width: 0, aspect: 1, height: 0, x: 0, y: 0 });
 const [completedCrop, setCompletedCrop] = useState(null);
 const [brightness, setBrightness] = useState(100);
+
 const [
     countState,
     {
@@ -247,7 +248,23 @@ const onChangeType = (arg)=> {
                             type={RectangleSelector.TYPE}
                             onChange={onChange}
                             onSubmit={onSubmit}
-                            style={{width: '100%', height: '740px'}}
+                            style={{width: '100%', height: '740px',
+                            objectFit: "cover",
+                            transform: `scale(${scale})`,
+                            transformOrigin: "top left",
+                            filter: `brightness(${brightness}%)`}}
+                            />
+                            <input
+                        type="range"
+                        id="brightnessRange"
+                        min="0"
+                        max="200"
+                        value={brightness}
+                        onChange={handleBrightnessChange}
+
+                            
+                    
+                            
                         />
                     </>
                 }
@@ -274,7 +291,7 @@ const onChangeType = (arg)=> {
                         value={brightness}
                         onChange={handleBrightnessChange}
                             
-                            />;
+                            />
                             
                     </>
                 }

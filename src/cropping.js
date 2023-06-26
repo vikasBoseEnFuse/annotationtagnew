@@ -19,14 +19,14 @@ const Demo = () => {
           <Cropper
             image={defaultSrc}
             crop={crop}
-            zoom={zoom}
+            // zoom={zoom}
             aspect={4 / 3}
             onCropChange={setCrop}
             onCropComplete={onCropComplete}
-            onZoomChange={setZoom}
+            // onZoomChange={setZoom}
           />
       </div>
-      <div className="controls">
+      {/* <div className="controls">
           <input
             type="range"
             value={zoom}
@@ -39,7 +39,7 @@ const Demo = () => {
             }}
             className="zoom-range"
           />
-        </div>
+        </div> */}
     </>
   )
 }
