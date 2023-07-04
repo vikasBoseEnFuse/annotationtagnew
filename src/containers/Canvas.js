@@ -2,11 +2,11 @@ import React, { useMemo, useRef, useState, useEffect } from "react";
 import PolygonAnnotation from "../components/polygon/PolygonAnnotation";
 import { Stage, Layer, Image } from "react-konva";
 import Button from "../components/polygon/Button";
-const videoSource = `${process.env.PUBLIC_URL}/images/six.jpg`;
+
 const wrapperStyle = {
   display: "flex",
   justifyContent: "center",
-  marginTop: 20,
+  marginTop: 0,
   backgroundColor: "aliceblue",
 };
 const columnStyle = {
@@ -14,10 +14,10 @@ const columnStyle = {
   justifyContent: "center",
   flexDirection: "column",
   alignItems: "center",
-  marginTop: 20,
+  marginTop: 0,
   backgroundColor: "aliceblue",
 };
-const Canvas = () => {
+const Canvas = (props) => {
   const [image, setImage] = useState();
   const imageRef = useRef(null);
   const dataRef = useRef(null);
@@ -27,14 +27,17 @@ const Canvas = () => {
   const [position, setPosition] = useState([0, 0]);
   const [isMouseOverPoint, setMouseOverPoint] = useState(false);
   const [isPolyComplete, setPolyComplete] = useState(false);
+  const {videoSource, imgBrightness} = props;
   const videoElement = useMemo(() => {
     const element = new window.Image();
-    element.width = 650;
-    element.height = 302;
+    element.width = 1260;
+    element.height = 650;
     element.src = videoSource;
+    element.style = imgBrightness;
     return element;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [videoSource]); //it may come from redux so it may be dependency that's why I left it as dependecny...
+  //const {videoElement} = props;
   useEffect(() => {
     const onload = function () {
       setSize({
@@ -117,7 +120,7 @@ const Canvas = () => {
       setPoints(result);
     }
   };
-
+console.log(imgBrightness)
   return (
     <div style={wrapperStyle}>
       <div style={columnStyle}>
@@ -158,7 +161,7 @@ const Canvas = () => {
           <Button name="Reset" onClick={reset} />
         </div>
       </div>
-      <div
+      {/* <div
         ref={dataRef}
         style={{
           width: 375,
@@ -168,7 +171,7 @@ const Canvas = () => {
         }}
       >
         <pre style={{ whiteSpace: "pre-wrap" }}>{JSON.stringify(points)}</pre>
-      </div>
+      </div> */}
     </div>
   );
 };

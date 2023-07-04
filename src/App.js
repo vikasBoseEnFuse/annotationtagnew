@@ -5,7 +5,7 @@ import Layout from './layout';
 function App() {
   return (
     <div className="App">
-      <h1 className="header">Annotation Tool Component</h1>
+      <marquee width="98%" direction="left" height="100px"><h1 className="header">Annotation Tool Component</h1></marquee>
       <Layout />
     </div>
   );
