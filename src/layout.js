@@ -16,12 +16,12 @@ import 'react-image-crop/dist/ReactCrop.css';
 import './components/layout/layout.css';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import { fileSystem as nodes } from '../src/utils/datajson';
+import { ReactPictureAnnotation } from "react-picture-annotation";
 import { undo, redo, reset } from '../src/utils';
-
+import Dropdown from "./dropdown";
 const defaultSrc = `${process.env.PUBLIC_URL}/images/six.jpg`;
-const Layout = () => {
+const Layout = props => {
     const canvasRef = useRef(null);
-    const annotationStackRef = useRef([]);
     const [cropSec, setCropSec] = useState(false)
     const [annotationSec, setAnnotationSec] = useState(false)
     const [magnifierSec, setMegnifierSec] = useState(false)
@@ -35,6 +35,7 @@ const Layout = () => {
     let [crop, setCrop] = useState({ unit: 'px', width: 0, height: 0, x: 0, y: 0 });
     const [completedCrop, setCompletedCrop] = useState(null);
     const [brightness, setBrightness] = useState(100);
+    const annotationStackRef = useRef([]);
     const [
         countState,
         {
@@ -76,22 +77,18 @@ const Layout = () => {
             reader.readAsDataURL(e.target.files[0]);
         }
     };
-
     const handleUndo = () => {
         // Access the undo function through the ref
         if (canvasRef.current) {
             canvasRef.current.undo();
         }
     };
-
     const handleRedo = () => {
         // Access the undo function through the ref
         if (canvasRef.current) {
             canvasRef.current.redo();
         }
-
     };
-
     const onLoad = useCallback((img) => {
         imgRef.current = img;
         console.log(imgRef.current)
@@ -100,7 +97,6 @@ const Layout = () => {
     const onChange = (annotation) => {
         setAnnotation(annotation)
     }
-
     const onSubmit = (annotation) => {
         const { geometry, data } = annotation;
         setAnnotations(
@@ -121,14 +117,12 @@ const Layout = () => {
             setAnnotations(annotations.slice(0, -1)); // Remove the last annotation from the annotations array
         }
     };
-
     const handleRedoRectangel = () => {
         if (annotationStackRef.current.length > 0) {
             const redoAnnotation = annotationStackRef.current.pop();
             setAnnotations([...annotations, redoAnnotation]); // Add the redo annotation back to the annotations array
         }
     };
-
     const zoomIn = () => {
         setScale((prevScale) => prevScale + 0.1);
     };
@@ -297,7 +291,6 @@ const Layout = () => {
         if (annotationSec) {
             handleUndoRectangel();
         }
-
         if (polygonSec) {
             handleUndo();
         }
@@ -306,14 +299,28 @@ const Layout = () => {
         if (annotationSec) {
             handleRedoRectangel();
         }
-
         if (polygonSec) {
             handleRedo();
         }
     };
 
+    const [pageSize, setPageSize] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight
+    });
 
+    const onResize = () => {
+        setPageSize({ width: window.innerWidth, height: window.innerHeight });
+    };
 
+    useEffect(() => {
+        window.addEventListener("resize", onResize);
+        return () => window.removeEventListener("resize", onResize);
+    }, []);
+
+    const onSelect = (e, selectedId) =>
+        console.log("onselct", selectedId, "e", e);
+    const onCchange = data => console.log("onChnage", data);
 
     return (
         <>
@@ -404,11 +411,26 @@ const Layout = () => {
                             </button>
                         </div>
                     }
-
-
                     {annotationSec &&
-                        <div style={{ overflow: "auto" }}>
-                            <Annotation
+                        <div className="annotation">``
+                            <ReactPictureAnnotation
+                                {...props}
+                                inputElement={(value, onCchange, onDelete) => (
+                                    <Dropdown
+                                        value={value}
+                                        onChange={onCchange}
+                                        onDelete={onDelete}
+                                        options={props.options}
+                                    />
+                                )}
+                                image={upImg}
+                                onSelect={onSelect}
+                                onChange={onCchange}
+                                onSubmit={onSubmit}
+                                width={pageSize.width}
+                                height={pageSize.height}
+                            />
+                            {/* <Annotation
                                 src={upImg}
                                 annotations={annotations}
                                 value={annotation}
@@ -425,10 +447,8 @@ const Layout = () => {
                                 }}
 
 
-                            />
-
+                            /> */}
                         </div>
-
                     }
                     {magnifierSec &&
                         <div style={{ overflow: "auto" }}>
@@ -446,7 +466,6 @@ const Layout = () => {
                                 id="mainimage"
                                 alt=""
                                 height={'650px'}
-
                             />
                         </div>
                     }

@@ -19,8 +19,10 @@
     "react-image-crop": "9.0.4",
     "react-konva": "^17.0.2-5",
     "react-magnifier": "^3.0.4",
+    "react-picture-annotation": "^1.2.0",
     "react-polygon-drawer": "^0.1.4",
     "react-scripts": "4.0.3",
+    "react-select": "^5.7.3",
     "use-undo": "^1.1.1",
     "utils": "^0.3.1",
     "web-vitals": "^2.1.4"
